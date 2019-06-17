@@ -15,9 +15,10 @@ const auth = new google.auth.JWT(
 
 const drive = google.drive({ version: 'v3', auth });
 
+// Possible request params: https://developers.google.com/drive/api/v3/reference/files/list
 const requestParams = {
     pageSize: 1,
-    fields: '*'
+    fields: 'files(name, webViewLink)'
 }
 
 drive.files.list(requestParams, (err, res) => {
@@ -32,4 +33,3 @@ drive.files.list(requestParams, (err, res) => {
     }
 });
 
-// Possible request params: https://developers.google.com/drive/api/v3/reference/files/list
