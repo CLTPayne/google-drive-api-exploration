@@ -15,8 +15,12 @@ const auth = new google.auth.JWT(
 
 const drive = google.drive({ version: 'v3', auth });
 
-// passing an empty object as a default argument
-drive.files.list({}, (err, res) => {
+const requestParams = {
+    pageSize: 1,
+    fields: '*'
+}
+
+drive.files.list(requestParams, (err, res) => {
     if (err) throw err;
     const files = res.data.files;
     if (files.length) {
@@ -27,3 +31,5 @@ drive.files.list({}, (err, res) => {
         console.log(`No files found`);
     }
 });
+
+// Possible request params: https://developers.google.com/drive/api/v3/reference/files/list
