@@ -6,6 +6,7 @@ cypress/screenshots/
 node_modules/
 yarn-error.log
 yarn.lock
+credentials.json
 
 # Build directory
 /public
