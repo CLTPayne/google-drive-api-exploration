@@ -1,5 +1,6 @@
 const { google } = require('googleapis');
 const credentials = require('./credentials.json');
+const fs = require('fs')
 
 const scopes = [
     'https://www.googleapis.com/auth/drive'
@@ -33,6 +34,8 @@ const requestParams = {
 //     }
 // });
 
+let data = 'Name,URL\n';
+
 (async function () {
     let res = await new Promise((resolve, reject) => {
         drive.files.list({
@@ -47,4 +50,16 @@ const requestParams = {
         });
     });
     console.log(res.data);
-})()
+    res.data.files.map(entry => {
+        const { name, webViewLink } = entry;
+        data += `${name},${webViewLink}\n`
+    });
+    fs.writeFile('data.csv', data, (err) => {
+        if (err)  throw err;
+        console.log('The file has been saved to CSV');
+    });
+})();
+
+
+
+
