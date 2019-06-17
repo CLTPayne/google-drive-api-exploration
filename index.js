@@ -97,7 +97,7 @@ let data = 'Name,URL\n';
         sheetData.push([name, webViewLink]);
     });
 
-    sheets.spreadsheets.values.append({
+    await sheets.spreadsheets.values.append({
         spreadsheetId: newSheet.data.spreadsheetId,
         valueInputOption: 'USER_ENTERED',
         range: 'A1',
@@ -108,6 +108,41 @@ let data = 'Name,URL\n';
         }
     });
     console.log('The file has been saved to Google Sheet');
+
+    // Add styling to the google sheet data
+    await sheets.spreadsheets.batchUpdate({
+        spreadsheetId: newSheet.data.spreadsheetId,
+        resource: {
+            requests: [
+                {
+                    repeatCell: {
+                        range: {
+                            startRowIndex: 0,
+                            endRowIndex: 1
+                        },
+                        cell: {
+                            userEnteredFormat: {
+                                backgroundColor: {
+                                    red: 0.2,
+                                    green: 0.2,
+                                    blue: 0.2
+                                },
+                                textFormat: {
+                                    foregroundColor: {
+                                        red: 1, 
+                                        green: 1,
+                                        blue: 1
+                                    },
+                                    bold: true
+                                }
+                            }
+                        },
+                        fields: 'userEnteredFormat(backgroundColor,textFormat)'
+                    }
+                }
+            ]
+        }
+    });
 })();
 
 
