@@ -89,6 +89,25 @@ let data = 'Name,URL\n';
             emailAddress: process.env.EMAIL
         }
     });
+
+    // Add data as new rows in google sheet (like the above local version in CSV)
+    let sheetData = [['File Name', 'URL']];
+    res.data.files.map(entry => {
+        const { name, webViewLink} = entry;
+        sheetData.push([name, webViewLink]);
+    });
+
+    sheets.spreadsheets.values.append({
+        spreadsheetId: newSheet.data.spreadsheetId,
+        valueInputOption: 'USER_ENTERED',
+        range: 'A1',
+        resource: {
+            range: 'A1',
+            majorDimension: 'ROWS',
+            values: sheetData
+        }
+    });
+    console.log('The file has been saved to Google Sheet');
 })();
 
 
