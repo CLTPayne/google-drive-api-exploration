@@ -19,17 +19,32 @@ const drive = google.drive({ version: 'v3', auth });
 const requestParams = {
     pageSize: 1,
     fields: 'files(name, webViewLink)'
-}
+};
 
-drive.files.list(requestParams, (err, res) => {
-    if (err) throw err;
-    const files = res.data.files;
-    if (files.length) {
-        files.map((file) => {
-            console.log(file);
+// drive.files.list(requestParams, (err, res) => {
+//     if (err) throw err;
+//     const files = res.data.files;
+//     if (files.length) {
+//         files.map((file) => {
+//             console.log(file);
+//         });
+//     } else {
+//         console.log(`No files found`);
+//     }
+// });
+
+(async function () {
+    let res = await new Promise((resolve, reject) => {
+        drive.files.list({
+            pageSize: 5,
+            fields: 'files(name, webViewLink)',
+            orderBy: 'createdTime desc'
+        }, function (err, res) {
+            if (err) {
+                reject(err);
+            } 
+            resolve(res);
         });
-    } else {
-        console.log(`No files found`);
-    }
-});
-
+    });
+    console.log(res.data);
+})()
