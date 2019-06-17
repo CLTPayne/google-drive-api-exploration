@@ -1,6 +1,7 @@
 const { google } = require('googleapis');
 const credentials = require('./credentials.json');
 const fs = require('fs')
+require('dotenv').config();
 
 const scopes = [
     'https://www.googleapis.com/auth/drive'
@@ -15,6 +16,7 @@ const auth = new google.auth.JWT(
 );
 
 const drive = google.drive({ version: 'v3', auth });
+const sheets = google.sheets({ version: 'v4', auth })
 
 // Possible request params: https://developers.google.com/drive/api/v3/reference/files/list
 const requestParams = {
@@ -22,6 +24,7 @@ const requestParams = {
     fields: 'files(name, webViewLink)'
 };
 
+// List files. All drive methods: https://developers.google.com/drive/api/v3/reference/
 // drive.files.list(requestParams, (err, res) => {
 //     if (err) throw err;
 //     const files = res.data.files;
@@ -57,6 +60,34 @@ let data = 'Name,URL\n';
     fs.writeFile('data.csv', data, (err) => {
         if (err)  throw err;
         console.log('The file has been saved to CSV');
+    });
+
+    // Create a new google sheet.
+    // By default the service account will own any file created  
+    let newSheet = await sheets.spreadsheets.create({
+        resource: {
+            properties: {
+                title: 'A new day, a new sheet 1'
+            }
+        }
+    });
+
+    // Move the sheet to a chosen folder:
+    const updatedSheet = await drive.files.update({
+        fileId: newSheet.data.spreadsheetId,
+        addParents: '1sOWTqtQiFQzhpOsjCxhTxci0A9Ok9Kjz',
+        fields: 'id, parents'
+    });
+
+    // Transfer ownership of the created file:
+    await drive.permissions.create({
+        fileId: newSheet.data.spreadsheetId,
+        transferOwnership: 'true',
+        resource: {
+            role: 'owner',
+            type: 'user',
+            emailAddress: process.env.EMAIL
+        }
     });
 })();
 
