@@ -53,14 +53,6 @@ let data = 'Name,URL\n';
         });
     });
     console.log(res.data);
-    res.data.files.map(entry => {
-        const { name, webViewLink } = entry;
-        data += `${name},${webViewLink}\n`
-    });
-    fs.writeFile('data.csv', data, (err) => {
-        if (err)  throw err;
-        console.log('The file has been saved to CSV');
-    });
 
     // Create a new google sheet.
     // By default the service account will own any file created  
@@ -90,7 +82,7 @@ let data = 'Name,URL\n';
         }
     });
 
-    // Add data as new rows in google sheet (like the above local version in CSV)
+    // Add data as new rows in google sheet (like the local version in CSV)
     let sheetData = [['File Name', 'URL']];
     res.data.files.map(entry => {
         const { name, webViewLink} = entry;
@@ -142,6 +134,16 @@ let data = 'Name,URL\n';
                 }
             ]
         }
+    });
+
+    // Back up data locally in CSV
+    res.data.files.map(entry => {
+        const { name, webViewLink } = entry;
+        data += `${name},${webViewLink}\n`
+    });
+    fs.writeFile('data.csv', data, (err) => {
+        if (err)  throw err;
+        console.log('The file has been saved to CSV');
     });
 })();
 
